@@ -1,32 +1,21 @@
 window.onload = function() {
 	//Display both the progress and the description form
 	
-	function show_loc_on_map(lat, lng) {
-        var mapOptions = {
-          center: new google.maps.LatLng(lat, lng),
-          zoom: 16,
-          mapTypeId: google.maps.MapTypeId.ROADMAP
-        };
-        var map = new google.maps.Map(document.getElementById("map_canvas"),
-            mapOptions);
-
-        var image = new google.maps.MarkerImage('images/marker.png',
-                new google.maps.Size(129, 42),
-                new google.maps.Point(0,0),
-                new google.maps.Point(18, 42)
-                );
+    var mapOptions = {
+      center: new google.maps.LatLng(0.00, 0.00),
+      zoom: 16,
+      mapTypeId: google.maps.MapTypeId.ROADMAP
+    };
+    var map = new google.maps.Map(document.getElementById("map_canvas"),
+        mapOptions);	
+	
+	function add_marker (content, lat, lng){
 
         // add marker
-
         var marker1 = new google.maps.Marker({
             position: new google.maps.LatLng (lat, lng),
             map: map
             });
-
-	   // var marker2 = new google.maps.Marker({
-	   //     position: new google.maps.LatLng (52.00, 14.00),
-	   //     map: map
-	   //     });
 
 		// Create information window
 		function createInfo (title, content){
@@ -35,18 +24,43 @@ window.onload = function() {
 
 		// Add information window
 		var infowindow1 = new google.maps.InfoWindow({
-			content: createInfo('R U Lost Yet?', 'abc')
+			content: createInfo('R U Lost Yet?', 
+			'<iframe width="100%" 
+					height="166" 
+					scrolling="no" 
+					frameborder="no" 
+					src="http://w.soundcloud.com/player/?url=http%3A%2F%2Fapi.soundcloud.com%2Ftracks%2F36434534&show_artwork=true">
+					</iframe>')
 		});
-		
+
 		// Add a listener for a click on the pin
 		google.maps.event.addListener(marker1, 'click', function(){
 			infowindow1.open(map, marker1);
-		});
+		});		
 		
 	}
 	
+	function render_map(lat, lng) {
+
+        var image = new google.maps.MarkerImage('images/marker.png',
+                new google.maps.Size(129, 42),
+                new google.maps.Point(0,0),
+                new google.maps.Point(18, 42)
+                );
+
+		add_marker( 'Not all who wander are lost', latitude, longitude);
+	}
 	
-  	function get_the_coords(position) {
+	func render_init_map(position) {
+		// get a location
+	    var latitude = position.coords.latitude;
+	    var longitude = position.coords.longitude;
+		
+		//render map now
+		Render_map(latitude, longitude); 
+	}
+	
+  	function get_the_curr_coords(position) {
         
 		// get a location
         var latitude = position.coords.latitude;
@@ -59,17 +73,43 @@ window.onload = function() {
 		});
 		
 		// show the location on a map. 
-		show_loc_on_map(latitude, longitude);
+		render_map(latitude, longitude);
     }
-    
+
+
+
     function get_location() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(get_the_coords);
-        } else {
-            alert("HTML5 Geolocation does not work here");
-        }
+		 if (navigator.geolocation) {
+	            navigator.geolocation.getCurrentPosition(get_the_curr_coords);
+	        } else {
+	            alert("HTML5 Geolocation does not work here");
+	        }       
+
         setTimeout(get_location, 10000);
     }
 
+	function place_all_markers(data){
+		var array = data.split(',');
+		// track1, lat1, lng1, track2, lat2, lng2...
+		for (var i=0; i < array.length();){
+			add_marker(array[i++], array[i++], array[i++]);
+		}
+	}
+
+	function get_all_locations(){
+		$.get("/getAllLocations", {}, function(data)) {
+			//create the map and center around curr location
+			if (navigator.geolocation) {
+		            navigator.geolocation.getCurrentPosition(render_init_map);
+					place_all_markers(data);
+		        } else {
+		            alert("HTML5 Geolocation does not work here");
+		        }	
+			
+		}	
+		
+	}
+
+	get_all_locations();
     get_location();
 }
