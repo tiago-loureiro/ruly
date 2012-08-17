@@ -11,6 +11,10 @@ window.onload = function() {
 	
 	function add_marker (content, lat, lng){
 
+        console.log("Adding marker, lat=" + lat + " lng=" + lng);
+        if(content === undefined || lat === undefined || lng === undefined) {
+            return;
+        }
         // add marker
         var marker1 = new google.maps.Marker({
             position: new google.maps.LatLng (lat, lng),
@@ -80,13 +84,15 @@ window.onload = function() {
 	            alert("HTML5 Geolocation does not work here");
 	        }       
 
-        setTimeout(get_location, 10000);
+        setTimeout(get_location, 60000);
     }
 
 	function place_all_markers(data){
 		var array = data.split(',');
 		// track1, lat1, lng1, track2, lat2, lng2...
-		for (var i=0; i < array.length;){
+        var markers = 0;
+        for (var i=0; i < array.length;){
+            console.log("Placing marker nr: " + (++markers));
 			add_marker(array[i++], array[i++], array[i++]);
 		}
 	}

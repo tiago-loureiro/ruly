@@ -143,13 +143,23 @@ function getAllUrlForTrackGivenGPS(data, response) {
 			resp2.on('end', function() {
 				var str2 = b2.toString();
 				var data2 = JSON.parse(str2);
-				console.log(data2.stream_url);
+				//console.log(data2.stream_url);
 				console.log(data2.tag_list);
 
-				var lat = data2.tag_list.split(' ')[0].split('=')[1];
-				var lng = data2.tag_list.split(' ')[1].split('=')[1];
+				var vals = data2.tag_list.split(' ');
+				var lat = 0.0;
+				var lng = 0.0;
+				if(vals[0].split('=')[0] == 'lat') {
+					lat = vals[0].split('=')[1];
+					lng = vals[1].split('=')[1];
+				} else {
+					lng = vals[0].split('=')[1];
+					lat = vals[1].split('=')[1];
+				}
+				console.log(data2.tag_list + " | lat=" + lat + " lng=" + lng);
+
 				tracksSoFar++;
-				var cur = data2.id + ',' + lat + ',' + lng;
+				var cur = data2.id + ',' + lat + ',' + lng + ',';
 				allTracks += cur;
 				console.log("so far: " + tracksSoFar + " total: " + nrTracks);
 				if(tracksSoFar == nrTracks) {
