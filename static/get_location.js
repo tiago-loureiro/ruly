@@ -55,7 +55,7 @@ window.onload = function() {
                 new google.maps.Point(18, 42)
                 );
 
-		add_marker( 2222, lat, lng);
+		add_marker( 36434534, lat, lng);
 		map.setCenter(new google.maps.LatLng(lat, lng));
 	}
 	
