@@ -14,7 +14,7 @@ window.onload = function() {
 	
 	function add_marker (track_no, lat, lng, movingMarker){
 
-        console.log("Adding marker, lat=" + lat + " lng=" + lng);
+        console.log("Adding marker, lat=" + lat + " lng=" + lng + " trackno=" + track_no);
         if(track_no === undefined || lat === undefined || lng === undefined) {
             return;
         }
@@ -115,11 +115,10 @@ window.onload = function() {
 
 		// pass location on to the server, to fetch the mp3
     	$.get("/getLocation", { lat:latitude, lng:longitude}, function(data) {
+            console.log(data);
             var json_obj = JSON.parse(data);
-            console.log(json_obj)
-            //$("#mp3_location").text(data);
-            $("#audio_speech").attr("src",json_obj.track);
-            $("#feedback").text("Distance to closest marker: " + Math.round(json_obj.distance) + "meters with id: " + json_obj.permalink);
+            $("#audio_speech").attr("src",json_obj.trackToSend);
+            $("#feedback").text("Distance to closest marker: " + Math.round(json_obj.distance) + "meters with id: " + json_obj.trackPermalink);
 		});
 		
 		// show the location on a map. 

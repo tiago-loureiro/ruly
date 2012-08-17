@@ -33,7 +33,6 @@ function convertTracksToSend(user_id) {
 	var tracks = usersTracks[user_id];
 	for (var i=0; i<tracks.length; i++) {
 		var track = tracks[i];
-		console.log(track.tag_list);
 		var str = track.id + ',' + track.lat + ',' + track.lng + ',';
 		tracksStrings += str;
 	}
@@ -80,7 +79,6 @@ function getClosestTrackToMarker(user_id, lat, lng) {
 
 	outputHash.distance *= 1000.0;
 	outputHash.trackToSend = outputHash.trackToSend + '?client_id=YOUR_CLIENT_ID';
-	console.log(outputHash);
 	return outputHash;
 }
 //====================================================================================
