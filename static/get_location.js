@@ -95,7 +95,7 @@ window.onload = function() {
 	            alert("HTML5 Geolocation does not work here");
 	        }       
 
-        setTimeout(get_location, 60000);
+        setTimeout(get_location, 10000);
     }
 
 	function place_all_markers(data){
