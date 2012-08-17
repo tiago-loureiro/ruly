@@ -9,18 +9,43 @@ window.onload = function() {
     var map = new google.maps.Map(document.getElementById("map_canvas"),
         mapOptions);	
 	var lastOpenWindow;
+	var currMarker;
+	var prevLat=0, prevLng=0;
 	
-	function add_marker (track_no, lat, lng){
+	function add_marker (track_no, lat, lng, movingMarker){
 
         console.log("Adding marker, lat=" + lat + " lng=" + lng);
         if(track_no === undefined || lat === undefined || lng === undefined) {
             return;
         }
         // add marker
+		if (movingMarker != true) {
         var marker1 = new google.maps.Marker({
             position: new google.maps.LatLng (lat, lng),
             map: map
             });
+		} else {
+			
+			// if current position marker, then you have to move the one you placed originally		
+			if (!currMarker) {
+				var pinColor = "005509";
+			    var pinImage = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|" + pinColor,
+			        new google.maps.Size(21, 34),
+			        new google.maps.Point(0,0),
+			        new google.maps.Point(10, 34));
+			
+	        	var marker1 = new google.maps.Marker({
+	            	position: new google.maps.LatLng (lat, lng),
+	            	map: map,
+					draggable:true,
+					icon: pinImage
+	            	});
+	
+					currMarker = marker1;
+			} else {
+				currMarker.setPosition(new google.maps.LatLng(lat, lng));
+			}
+		}
 
 		// Create information window
 		function createInfo (title, content){
@@ -40,7 +65,11 @@ window.onload = function() {
 			if (lastOpenWindow) {
 				lastOpenWindow.close();
 			}
-			
+			// stop the autoplay, if it is running
+			var els = document.querySelectorAll('audio');
+			if (els) {
+				els[0].removeAttribute('autoplay');
+			}
 			infowindow1.open(map, marker1);
 			lastOpenWindow = infowindow1;
 		});		
@@ -55,8 +84,18 @@ window.onload = function() {
                 new google.maps.Point(18, 42)
                 );
 
-		add_marker( 36434534, lat, lng);
-		map.setCenter(new google.maps.LatLng(lat, lng));
+		add_marker( 36434534, lat, lng, true);
+		
+		if (prevLat != lat || prevLng != lng) {
+			lat = lat.toFixed(3);
+			lng = lng.toFixed(3);
+		
+			map.setCenter(new google.maps.LatLng(lat, lng));
+			prevLat = lat; 
+			prevLng = lng;
+
+		}
+		
 	}
 	
 	function render_init_map(position) {
@@ -104,7 +143,7 @@ window.onload = function() {
         var markers = 0;
         for (var i=0; i < array.length;){
             console.log("Placing marker nr: " + (++markers));
-			add_marker(array[i++], array[i++], array[i++]);
+			add_marker(array[i++], array[i++], array[i++], false);
 		}
 	}
 
