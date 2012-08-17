@@ -2,17 +2,17 @@ window.onload = function() {
 	//Display both the progress and the description form
 	
     var mapOptions = {
-      center: new google.maps.LatLng(0.00, 0.00),
+      center: new google.maps.LatLng(52.52, 13.41),
       zoom: 16,
       mapTypeId: google.maps.MapTypeId.ROADMAP
     };
     var map = new google.maps.Map(document.getElementById("map_canvas"),
         mapOptions);	
 	
-	function add_marker (content, lat, lng){
+	function add_marker (track_no, lat, lng){
 
         console.log("Adding marker, lat=" + lat + " lng=" + lng);
-        if(content === undefined || lat === undefined || lng === undefined) {
+        if(track_no === undefined || lat === undefined || lng === undefined) {
             return;
         }
         // add marker
@@ -29,7 +29,7 @@ window.onload = function() {
 		// Add information window
 		var infowindow1 = new google.maps.InfoWindow({
 			content: createInfo('R U Lost Yet?', 
-			'<iframe width="100%" height="166" scrolling="no" frameborder="no" src="http://w.soundcloud.com/player/?url=http%3A%2F%2Fapi.soundcloud.com%2Ftracks%2F36434534&show_artwork=true"></iframe>')
+			'<iframe width="100%" height="166" scrolling="no" frameborder="no" src="http://w.soundcloud.com/player/?url=http%3A%2F%2Fapi.soundcloud.com%2Ftracks%2F'+track_no+'&show_artwork=true"></iframe>')
 		});
 
 		// Add a listener for a click on the pin
@@ -47,7 +47,8 @@ window.onload = function() {
                 new google.maps.Point(18, 42)
                 );
 
-		add_marker( 'Not all who wander are lost', lat, lng);
+		add_marker( 2222, lat, lng);
+		map.setCenter(new google.maps.LatLng(lat, lng));
 	}
 	
 	function render_init_map(position) {
