@@ -25,12 +25,7 @@ window.onload = function() {
 		// Add information window
 		var infowindow1 = new google.maps.InfoWindow({
 			content: createInfo('R U Lost Yet?', 
-			'<iframe width="100%" 
-					height="166" 
-					scrolling="no" 
-					frameborder="no" 
-					src="http://w.soundcloud.com/player/?url=http%3A%2F%2Fapi.soundcloud.com%2Ftracks%2F36434534&show_artwork=true">
-					</iframe>')
+			'<iframe width="100%" height="166" scrolling="no" frameborder="no" src="http://w.soundcloud.com/player/?url=http%3A%2F%2Fapi.soundcloud.com%2Ftracks%2F36434534&show_artwork=true"></iframe>')
 		});
 
 		// Add a listener for a click on the pin
@@ -48,16 +43,16 @@ window.onload = function() {
                 new google.maps.Point(18, 42)
                 );
 
-		add_marker( 'Not all who wander are lost', latitude, longitude);
+		add_marker( 'Not all who wander are lost', lat, lng);
 	}
 	
-	func render_init_map(position) {
+	function render_init_map(position) {
 		// get a location
 	    var latitude = position.coords.latitude;
 	    var longitude = position.coords.longitude;
 		
 		//render map now
-		Render_map(latitude, longitude); 
+		render_map(latitude, longitude); 
 	}
 	
   	function get_the_curr_coords(position) {
@@ -91,13 +86,14 @@ window.onload = function() {
 	function place_all_markers(data){
 		var array = data.split(',');
 		// track1, lat1, lng1, track2, lat2, lng2...
-		for (var i=0; i < array.length();){
+		for (var i=0; i < array.length;){
 			add_marker(array[i++], array[i++], array[i++]);
 		}
 	}
 
 	function get_all_locations(){
-		$.get("/getAllLocations", {}, function(data)) {
+		$.get("/getAllLocations", {}, function(data) {
+            console.log(data);
 			//create the map and center around curr location
 			if (navigator.geolocation) {
 		            navigator.geolocation.getCurrentPosition(render_init_map);
@@ -106,7 +102,7 @@ window.onload = function() {
 		            alert("HTML5 Geolocation does not work here");
 		        }	
 			
-		}	
+		})
 		
 	}
 
