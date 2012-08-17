@@ -5,8 +5,9 @@ var fs = require('fs');
 var utils = require('util');
 var querystring = require('querystring');
 
-var serverAddress = "10.1.155.146";
-var serverPort = 8080;
+//var serverAddress = "10.1.155.146";
+//var serverPort = 8080;
+var serverPort = process.env.PORT || 5000;
 
 
 /*
@@ -280,7 +281,6 @@ var serverHTTP = http.createServer(function (req, res) {
 		default:
       		handleStaticFile(req, res);
   }
-}).listen(serverPort, serverAddress);
+}).listen(serverPort);
 
-
-console.log('Server running..' + serverPort);
+//console.log('Server running..' + serverPort);
