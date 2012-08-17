@@ -1,6 +1,6 @@
 window.onload = function() {
 	//Display both the progress and the description form
-	
+	// GLOBALS
     var mapOptions = {
       center: new google.maps.LatLng(52.52, 13.41),
       zoom: 16,
@@ -8,6 +8,7 @@ window.onload = function() {
     };
     var map = new google.maps.Map(document.getElementById("map_canvas"),
         mapOptions);	
+	var lastOpenWindow;
 	
 	function add_marker (track_no, lat, lng){
 
@@ -34,7 +35,14 @@ window.onload = function() {
 
 		// Add a listener for a click on the pin
 		google.maps.event.addListener(marker1, 'click', function(){
+			
+			// close any open child window, before opening new one
+			if (lastOpenWindow) {
+				lastOpenWindow.close();
+			}
+			
 			infowindow1.open(map, marker1);
+			lastOpenWindow = infowindow1;
 		});		
 		
 	}
@@ -47,7 +55,7 @@ window.onload = function() {
                 new google.maps.Point(18, 42)
                 );
 
-		add_marker( 2222, lat, lng);
+		add_marker( 36434534, lat, lng);
 		map.setCenter(new google.maps.LatLng(lat, lng));
 	}
 	
