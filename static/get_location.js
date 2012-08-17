@@ -80,6 +80,7 @@ window.onload = function() {
             console.log(json_obj)
             //$("#mp3_location").text(data);
             $("#audio_speech").attr("src",json_obj.track);
+            $("#feedback").text("Distance to closest marker: " + Math.round(json_obj.distance) + "meters with id: " + json_obj.permalink);
 		});
 		
 		// show the location on a map. 

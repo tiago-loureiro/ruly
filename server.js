@@ -115,11 +115,12 @@ function getUrlForTrackGivenGPS(data, response, user_lat, user_lng) {
 				if (d < shortestDistance) {
 					shortestDistance = d;
 					trackToSend = data2.stream_url;
+					trackPermalink = data2.permalink;
 				}
 				console.log("Distance is: " + d + " km");
 				if(tracksSoFar == nrTracks) {
 					shortestDistance *= 1000.0;
-					var objToJson = { distance: shortestDistance, track: trackToSend + '?client_id=YOUR_CLIENT_ID' };
+					var objToJson = { distance: shortestDistance, track: trackToSend + '?client_id=YOUR_CLIENT_ID', permalink: trackPermalink };
 					response.end(JSON.stringify(objToJson));
 				}
 				
