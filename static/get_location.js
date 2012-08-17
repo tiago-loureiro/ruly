@@ -150,7 +150,6 @@ window.onload = function() {
 
 	function get_all_locations(){
 		$.get("/getAllLocations", {}, function(data) {
-            console.log(data);
 			//create the map and center around curr location
 			if (navigator.geolocation) {
 		            navigator.geolocation.getCurrentPosition(render_init_map);
