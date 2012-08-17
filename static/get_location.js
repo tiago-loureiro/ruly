@@ -35,7 +35,7 @@ window.onload = function() {
 
 		// Add information window
 		var infowindow1 = new google.maps.InfoWindow({
-			content: createInfo('R U Lost Yet?', '<iframe width="100%" height="166" scrolling="no" frameborder="no" src="http://w.soundcloud.com/player/?url=http%3A%2F%2Fapi.soundcloud.com%2Ftracks%2F36434534&show_artwork=true"></iframe>')
+			content: createInfo('R U Lost Yet?', 'abc')
 		});
 		
 		// Add a listener for a click on the pin
@@ -47,14 +47,15 @@ window.onload = function() {
 	
 	
   	function get_the_coords(position) {
-
+        
 		// get a location
         var latitude = position.coords.latitude;
         var longitude = position.coords.longitude;
 
 		// pass location on to the server, to fetch the mp3
     	$.get("/getLocation", { lat:latitude, lng:longitude}, function(data) {
-    		$("#mp3_location").text(data);
+            $("#mp3_location").text(data);
+            $("#audio_speech").attr("src",data);
 		});
 		
 		// show the location on a map. 
@@ -62,14 +63,13 @@ window.onload = function() {
     }
     
     function get_location() {
-        if (Modernizr.geolocation) {
+        if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(get_the_coords);
         } else {
-            alert ("HTML5 Geolocation does not work here");
+            alert("HTML5 Geolocation does not work here");
         }
-
-        //setTimeout(get_location, 10000);
+        setTimeout(get_location, 10000);
     }
-    
+
     get_location();
 }

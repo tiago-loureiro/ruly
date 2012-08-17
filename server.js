@@ -5,7 +5,7 @@ var fs = require('fs');
 var utils = require('util');
 var querystring = require('querystring');
 
-var serverAddress = "localhost";
+var serverAddress = "10.1.155.146";
 var serverPort = 8080;
 
 
@@ -30,6 +30,7 @@ function handleStaticFile(req, res) {
             			contentType = 'application/javascript';
           			var encoding = 'utf-8';
           			res.writeHead(200, {'Content-Type': contentType});
+          			console.log('sending reply');
           			res.end(content, encoding);
        			}
       		});
@@ -41,21 +42,77 @@ function handleStaticFile(req, res) {
 	})
 }
 
+//Expects an array of JSON objects
+function getUrlForTrackGivenGPS(data, response) {
+	var found = false;
+	var allTracks = '';
+	for (var i=0; i<data.length; i++) {
+		console.log(data[i].id);
+		console.log(data[i].uri);
+		var track_path = '/tracks/' + data[i].id + '.json?client_id=YOUR_CLIENT_ID';
+		console.log(track_path);
+		var options2 = {
+		    host: 'api.soundcloud.com',
+		    port: 80,
+		    path: track_path
+    	};
+
+	    //Let's fetch all the tracks from the user
+		http.get(options2, function(resp2) {
+			var b2 = new Buffer(0);
+			resp2.on('data', function(d2) {
+				b2 += d2;
+			});
+			resp2.on('end', function() {
+				var str2 = b2.toString();
+				var data2 = JSON.parse(str2);
+				console.log(data2.stream_url);
+				console.log(data2.tag_list);
+
+				var lat = data2.tag_list.split(' ')[0].split('=')[1];
+				var lng = data2.tag_list.split(' ')[1].split('=')[1];
+				if(false) {
+					found = true;
+					response.end(data2.stream_url + '?client_id=YOUR_CLIENT_ID');
+				}
+			})
+		}).on('error', function(e) {
+			console.log("Got error: " + e.message);
+		});
+		console.log("i am here now");
+	}
+	console.log("out");
+}
+
 function handleLocation(req, res) {
-	res.writeHead(200, {'Content-Type': 'text/plain'});
- 	//res.write("yeah are getting there");
- 	var options = {
-	    host: 'www.google.com',
+	//Let's send out plain text
+	res.writeHead(200, {'Content-Type': 'text/plain', 'Cache-Control': 'no-cache' });
+	var options = {
+	    host: 'api.soundcloud.com',
 	    port: 80,
-	    path: '/'
+	    path: '/users/22316098/tracks.json?client_id=YOUR_CLIENT_ID'
     };
 
-    http.get(options, function(resp) {
-      console.log("Got response: " + resp.statusCode);
-      res.end(""+resp.statusCode);
-    }).on('error', function(e) {
-      console.log("Got error: " + e.message);
-    });
+    console.log("Making request to: " + options)
+
+    //Let's fetch all the tracks from the user
+	http.get(options, function(resp) {
+		console.log("Got response: " + resp.statusCode);
+		var b = new Buffer(0);
+		resp.on('data', function(d) {
+			b += d;
+		});
+		resp.on('end', function() {
+			var str = b.toString();
+			var data = JSON.parse(str);
+			getUrlForTrackGivenGPS(data, res);
+			console.log("Ending!");
+		})
+	}).on('error', function(e) {
+		console.log("Got error: " + e.message);
+		res.write(JSON.stringify({ error: e.message }));
+		res.end();
+	});
 }
 
 
@@ -64,11 +121,14 @@ var serverHTTP = http.createServer(function (req, res) {
 	req.parsedUrl = url.parse(req.url);
   	req.parsedUrl.parsedQuery = querystring.parse(req.parsedUrl.query || '');
 
-  	console.log("Request for url: " + req.url);
+  	console.log("Request for pathname: " + req.parsedUrl.pathname);
 
   	switch (req.parsedUrl.pathname) {
+  		case '/getAllLocations':
+  			handleAllLocations(req, res);
+	  		break;
 		case '/getLocation':
-	  		handleLocation(req, res);
+			handleLocation(req, res);
 	  		break;
 		default:
       		handleStaticFile(req, res);
