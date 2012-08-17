@@ -4,7 +4,7 @@ window.onload = function() {
   	function checkLocation() {
 		var ts = new Date().getTime();
     	$.get("/getLocation", { NoCache: ts}, function(data) {
-			var percent = parseFloat(data);
+    		$("#mp3_location").text(data);
 		});
 		setTimeout(checkLocation, 10000);
   	}

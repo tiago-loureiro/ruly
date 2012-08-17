@@ -43,7 +43,7 @@ function handleStaticFile(req, res) {
 
 function handleLocation(req, res) {
 	res.writeHead(200, {'Content-Type': 'text/plain'});
- 	res.write("yeah are getting there");
+ 	//res.write("yeah are getting there");
  	var options = {
 	    host: 'www.google.com',
 	    port: 80,
@@ -52,7 +52,7 @@ function handleLocation(req, res) {
 
     http.get(options, function(resp) {
       console.log("Got response: " + resp.statusCode);
-      res.end();
+      res.end(""+resp.statusCode);
     }).on('error', function(e) {
       console.log("Got error: " + e.message);
     });
