@@ -68,8 +68,10 @@ window.onload = function() {
 
 		// pass location on to the server, to fetch the mp3
     	$.get("/getLocation", { lat:latitude, lng:longitude}, function(data) {
-            $("#mp3_location").text(data);
-            $("#audio_speech").attr("src",data);
+            var json_obj = JSON.parse(data);
+            console.log(json_obj)
+            //$("#mp3_location").text(data);
+            $("#audio_speech").attr("src",json_obj.track);
 		});
 		
 		// show the location on a map. 
