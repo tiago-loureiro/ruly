@@ -37,19 +37,20 @@ window.onload = function() {
 
         // add marker
 		if (movingMarker != true) {
+            var pinColor = "33ccff";
+            var pinImage = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|" + pinColor,
+                new google.maps.Size(21, 34),
+                new google.maps.Point(0,0),
+                new google.maps.Point(10, 34));
             var marker1 = new google.maps.Marker({
                 position: new google.maps.LatLng (lat, lng),
-                map: map
+                map: map,
+                icon: pinImage
                 });
 		} else {
 			// if current position marker, then you have to move the one you placed originally		
 			if (!gOurMarker) {
-				var pinColor = "005509";
-			    var pinImage = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|" + pinColor,
-			        new google.maps.Size(21, 34),
-			        new google.maps.Point(0,0),
-			        new google.maps.Point(10, 34));
-			
+			    var pinImage = '/static/ruly.png'; 
 	        	var marker1 = new google.maps.Marker({
 	            	position: new google.maps.LatLng (lat, lng),
 	            	map: map,
