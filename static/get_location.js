@@ -63,6 +63,10 @@ window.onload = function() {
 			return '<div class="infowindow"> <strong>' + title + '<strong>' + content + '</div>';
 		}
 
+        if(!marker1) {
+            return;
+        }
+
 		// Add a listener for a click on the pin
 		google.maps.event.addListener(marker1, 'click', function(){
 			
@@ -73,7 +77,7 @@ window.onload = function() {
 			// stop the autoplay, if it is running
 			var els = document.querySelectorAll('audio');
 			if (els) {
-				els[0].removeAttribute('autoplay');
+				//els[0].removeAttribute('autoplay');
 			}
             if (movingMarker) {
                 windowOfMovingMarker.setContent('<html>' + new Date() + ': Hello there, you are currently ' + distanceForcurrMarker + ' meteres away from the nearest marker: ' + textForcurrMarker + '</html>');
@@ -132,8 +136,8 @@ window.onload = function() {
             $("#feedback").text("Distance to closest marker: " + Math.round(json_obj.distance) + "meters with id: " + json_obj.trackPermalink);
             // show the location on a map.
             windowOfMovingMarker.setContent('<html>' + new Date() + ': Hello there, you are currently ' + distanceForcurrMarker + ' meteres away from the nearest marker: ' + textForcurrMarker + '</html>');
-            render_map(latitude, longitude, distance, textForcurrMarker);
 		});
+        render_map(latitude, longitude, distance, textForcurrMarker);
     }
 
 
@@ -145,7 +149,7 @@ window.onload = function() {
                alert("HTML5 Geolocation does not work here");
            }          
 
-       setInterval(get_location, 10000);
+       setTimeout(get_location, 10000);
     }
 
 	function place_all_markers(data){
