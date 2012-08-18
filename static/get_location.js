@@ -161,7 +161,6 @@ window.onload = function() {
             distance = Math.round(json_obj.distance);
             distanceForcurrMarker = distance;
             textForcurrMarker = new String(json_obj.trackPermalink);
-            alert(json_obj.trackToSend);
             if(json_obj.trackToSend != lastTrackPlayed) {
                 lastTrackPlayed = json_obj.trackToSend;
                 $("#audio_speech").attr("src",json_obj.trackToSend);
