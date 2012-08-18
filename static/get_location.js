@@ -19,6 +19,7 @@ window.onload = function() {
 	var gMarkerDragged = false;
 	var gOurLat = 0, gOurLng = 0;
 	var gPrevLat=0, gPrevLng=0;
+    var lastTrackPlayed = '';
 	
 	function add_marker (track_no, lat, lng, movingMarker, distanceToClosestMarker, someTextToDisplay){
 
@@ -64,7 +65,6 @@ window.onload = function() {
 					gMarkerDragged = true;
 					gOurLat = event.latLng.lat();
 					gOurLng = event.latLng.lng();	
-					alert("gMarkerDragged set to true. lat= "+ gOurLat + " lng=" + gOurLng);	
 				});
 			} else {
 				gOurMarker.setPosition(new google.maps.LatLng(lat, lng));
@@ -160,7 +160,11 @@ window.onload = function() {
             distance = Math.round(json_obj.distance);
             distanceForcurrMarker = distance;
             textForcurrMarker = new String(json_obj.trackPermalink);
-            $("#audio_speech").attr("src",json_obj.trackToSend);
+            alert(json_obj.trackToSend);
+            if(json_obj.trackToSend != lastTrackPlayed) {
+                lastTrackPlayed = json_obj.trackToSend;
+                $("#audio_speech").attr("src",json_obj.trackToSend);
+            }
             $("#feedback").text("Distance to closest marker: " + Math.round(json_obj.distance) + "meters with id: " + json_obj.trackPermalink);
             // show the location on a map.
             var d = new Date();
@@ -185,7 +189,7 @@ window.onload = function() {
 				var dragend_point = new google.maps.LatLng(gOurLat, gOurLng);
 				get_the_curr_coords(dragend_point); 
 				}       
-        setTimeout(get_location, 10000);
+        setTimeout(get_location, 5000);
     }
 
 	function place_all_markers(data){
