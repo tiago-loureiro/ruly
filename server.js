@@ -5,8 +5,7 @@ var fs = require('fs');
 var utils = require('util');
 var querystring = require('querystring');
 
-//var serverAddress = "10.1.155.146";
-//var serverPort = 8080;
+//var serverAddress = '10.1.155.146';
 var serverPort = process.env.PORT || 5000;
 
 var usersIds = [ '22316098' ];
@@ -76,7 +75,6 @@ function getClosestTrackToMarker(user_id, lat, lng) {
 			outputHash['trackPermalink'] = track.permalink;
 		}
 	}
-
 	outputHash.distance *= 1000.0;
 	outputHash.trackToSend = outputHash.trackToSend + '?client_id=YOUR_CLIENT_ID';
 	return outputHash;
@@ -167,7 +165,7 @@ function updateTracks() {
     for(var i=0; i<usersIds.length; i++) {
     	getAllTracks(usersIds[i]);
     }
-    setTimeout(updateTracks, 10000);
+    setTimeout(updateTracks, 60000);
 }
 updateTracks();
 //==========================================================================
@@ -176,31 +174,37 @@ updateTracks();
  *
  */
 function handleStaticFile(req, res) {
-	var filePath = '.' + req.url;
-  	if (filePath == './') {
-    	filePath = './static/index.html';
-  	}
-	path.exists(filePath, function(fileExists) {
-    	if (fileExists) {
-    		fs.readFile(filePath, function(error, content) {
-    			if (error) {
-        			res.writeHead(500);
-          			res.end();
-        		} else {
-          			var contentType = 'text/html';
-          			if (filePath.substr(-3) == '.js')
-            			contentType = 'application/javascript';
-          			var encoding = 'utf-8';
-          			res.writeHead(200, {'Content-Type': contentType});
-          			res.end(content, encoding);
-       			}
-      		});
-    	} else {
-    		console.log("Requested page not found: " + filePath	);
-			res.writeHead(404);
-			res.end()
-    	}
-	})
+	var uri = url.parse(req.url).pathname;  
+    var filename = path.join(process.cwd(), uri);
+    if (uri == '/') {
+     	filename = './static/index.html';
+	}
+    path.exists(filename, function(exists) {  
+        if(!exists) {  
+            res.writeHead(404, {'Content-Type': 'text/plain', 'Cache-Control': 'no-cache' });
+            res.write("404 Not Found\n");  
+            res.end();  
+            return;  
+        }  
+          
+        fs.readFile(filename, "binary", function(err, file) {  
+            if(err) {  
+                res.writeHead(500, {'Content-Type': 'text/plain', 'Cache-Control': 'no-cache' });
+                res.write(err + "\n");  
+                res.end();  
+                return;  
+            }
+            var ext = filename.substr(filename.lastIndexOf('.') + 1);
+            var mimeType = 'text/html';
+            if(ext == 'js') {
+            	mimeType = 'application/javascript';
+            }
+            //Set the proper file type header
+            res.writeHead(200, {'Content-Type': mimeType, 'Cache-Control': 'no-cache' });
+            res.write(file, "binary");  
+            res.end();  
+        });
+    });
 }
 //==========================================================================
 //==========================================================================
@@ -221,10 +225,10 @@ var serverHTTP = http.createServer(function (req, res) {
 		case '/getLocation':
 			res.writeHead(200, {'Content-Type': 'text/plain', 'Cache-Control': 'no-cache' });
 			var out = getClosestTrackToMarker(usersIds[0], req.parsedUrl.parsedQuery.lat, req.parsedUrl.parsedQuery.lng);
-	  		console.log(out);
 	  		res.end(JSON.stringify(out));
 	  		break;
 		default:
       		handleStaticFile(req, res);
   }
+//}).listen(serverPort,serverAddress);
 }).listen(serverPort);
