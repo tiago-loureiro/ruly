@@ -14,6 +14,11 @@ window.onload = function() {
     var distanceForcurrMarker = 0;
     var textForcurrMarker = '';
 	var prevLat=0, prevLng=0;
+	var gLastOpenWindow;
+	var gOurMarker;
+	var gMarkerDragged = false;
+	var gOurLat = 0, gOurLng = 0;
+	var gPrevLat=0, gPrevLng=0;
 	
 	function add_marker (track_no, lat, lng, movingMarker, distanceToClosestMarker, someTextToDisplay){
 
@@ -36,8 +41,8 @@ window.onload = function() {
                 map: map
                 });
 		} else {
-            // if current position marker, then you have to move the one you placed originally		
-			if (!currMarker) {
+			// if current position marker, then you have to move the one you placed originally		
+			if (!gOurMarker) {
 				var pinColor = "005509";
 			    var pinImage = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|" + pinColor,
 			        new google.maps.Size(21, 34),
@@ -50,11 +55,19 @@ window.onload = function() {
 					draggable:true,
                     icon: pinImage
 	            	});
-
                 windowOfMovingMarker = infowindow1;
-				currMarker = marker1;
+				gOurMarker = marker1;
+					
+				//track the draggable marker. each new location can be sent back to the server
+				// and once you drag the current location marker, geolocation lookups stop. 
+				google.maps.event.addListener(gOurMarker, "dragend", function(event) {
+					gMarkerDragged = true;
+					gOurLat = event.latLng.lat();
+					gOurLng = event.latLng.lng();	
+					alert("gMarkerDragged set to true. lat= "+ gOurLat + " lng=" + gOurLng);	
+				});
 			} else {
-				currMarker.setPosition(new google.maps.LatLng(lat, lng));
+				gOurMarker.setPosition(new google.maps.LatLng(lat, lng));
 			}
 		}
 
@@ -71,8 +84,8 @@ window.onload = function() {
 		google.maps.event.addListener(marker1, 'click', function(){
 			
 			// close any open child window, before opening new one
-			if (lastOpenWindow) {
-				lastOpenWindow.close();
+			if (gLastOpenWindow) {
+				gLastOpenWindow.close();
 			}
 			// stop the autoplay, if it is running
 			var els = document.querySelectorAll('audio');
@@ -84,8 +97,8 @@ window.onload = function() {
             }
             
 			infowindow1.open(map, marker1);
-			lastOpenWindow = infowindow1;
-		});
+			gLastOpenWindow = infowindow1;
+		});		
 	}
 	
 	function render_map(lat, lng, distanceToClosestMarker, textToDisplay) {
@@ -98,13 +111,13 @@ window.onload = function() {
 
 		add_marker( 36434534, lat, lng, true, distanceToClosestMarker, textToDisplay);
 		
-		if (prevLat != lat || prevLng != lng) {
+		if (gPrevLat != lat || gPrevLng != lng) {
 			lat = lat.toFixed(3);
 			lng = lng.toFixed(3);
 		
 			map.setCenter(new google.maps.LatLng(lat, lng));
-			prevLat = lat; 
-			prevLng = lng;
+			gPrevLat = lat; 
+			gPrevLng = lng;
 
 		}
 		
@@ -120,11 +133,25 @@ window.onload = function() {
 	}
 	
   	function get_the_curr_coords(position) {
-		// get a location
-        var latitude = position.coords.latitude;
-        var longitude = position.coords.longitude;
         var distance;
-        
+        if(position === undefined) {
+			alert("position is undefined");
+            return;
+        }
+		// get the lat and lng
+		var latitude = 0, longitude = 0;
+		if (position.coords){
+			latitude = position.coords.latitude;
+        	longitude = position.coords.longitude;
+		} else {
+			latitude = position.lat();
+			longitude = position.lng();
+		}
+		
+		if (latitude == 0 || longitude == 0) {
+			alert("postion read failed");
+			return;
+		}
 		// pass location on to the server, to fetch the mp3
     	$.get("/getLocation", { lat:latitude, lng:longitude}, function(data) {
             console.log(data);
@@ -137,19 +164,26 @@ window.onload = function() {
             // show the location on a map.
             windowOfMovingMarker.setContent('<html>' + new Date() + ': Hello there, you are currently ' + distanceForcurrMarker + ' meteres away from the nearest marker: ' + textForcurrMarker + '</html>');
 		});
+
         render_map(latitude, longitude, distance, textForcurrMarker);
+		// show the location on a map. 
+		//render_map(latitude, longitude);
     }
 
 
 
     function get_location() {
-        if (navigator.geolocation) {
-               navigator.geolocation.getCurrentPosition(get_the_curr_coords, errorCoor, {maximumAge:60000, timeout:5000, enableHighAccuracy:true});
-           } else {
-               alert("HTML5 Geolocation does not work here");
-           }          
-
-       setTimeout(get_location, 10000);
+		 if(gMarkerDragged == false) {
+		 	if (navigator.geolocation) {
+	            	navigator.geolocation.getCurrentPosition(get_the_curr_coords, errorCoor, {maximumAge:60000, timeout:5000, enableHighAccuracy:true});
+	        	} else {
+	            	alert("HTML5 Geolocation does not work here");
+	        	}
+			} else { // if gOurMarker was moved. 
+				var dragend_point = new google.maps.LatLng(gOurLat, gOurLng);
+				get_the_curr_coords(dragend_point); 
+				}       
+        setTimeout(get_location, 10000);
     }
 
 	function place_all_markers(data){
