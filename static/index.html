@@ -16,9 +16,17 @@
 
 	</head>
     <body class="no-js" >
-		<div id="map_canvas" style="width:100%; height:100%"></div>
-    	<div id="speech">
-			<audio id="audio_speech" src="" controls="controls" autoplay="autoplay">Your browser does not support the audio element.</audio>
+    	<div id="map_canvas" style="z-index: 0; position:absolute; left:0px; top:0px; width:100%; height:100%"></div>
+		<!--<div id="info_div" style="z-index: -2; height:100; width:100">
+			<canvas id="info">
+			This text is displayed if your browser does not support HTML5 Canvas.
+			</canvas>
+		</div>-->
+		<!-- Hide it behind the map -->
+    	<div id="speech" style="z-index: -4; position:absolute; left:0px; top:0px;">
+	    	<audio id="audio_speech" src="" controls="controls" autoplay="autoplay">
+				Your browser does not support the audio element.
+			</audio>
     	</div>
 	</body>
 </html>

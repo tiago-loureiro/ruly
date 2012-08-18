@@ -93,7 +93,8 @@ window.onload = function() {
 				//els[0].removeAttribute('autoplay');
 			}
             if (movingMarker) {
-                windowOfMovingMarker.setContent('<html>' + new Date() + ': Hello there, you are currently ' + distanceForcurrMarker + ' meteres away from the nearest marker: ' + textForcurrMarker + '</html>');
+                var d = new Date();
+                windowOfMovingMarker.setContent('<html>' + d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds() + ': Hello there, you are currently ' + distanceForcurrMarker + ' meteres away <br> from the nearest marker: ' + textForcurrMarker + '</html>');
             }
             
 			infowindow1.open(map, marker1);
@@ -162,7 +163,8 @@ window.onload = function() {
             $("#audio_speech").attr("src",json_obj.trackToSend);
             $("#feedback").text("Distance to closest marker: " + Math.round(json_obj.distance) + "meters with id: " + json_obj.trackPermalink);
             // show the location on a map.
-            windowOfMovingMarker.setContent('<html>' + new Date() + ': Hello there, you are currently ' + distanceForcurrMarker + ' meteres away from the nearest marker: ' + textForcurrMarker + '</html>');
+            var d = new Date();
+            windowOfMovingMarker.setContent('<html>' + d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds() + ': Hello there, you are currently ' + distanceForcurrMarker + ' meteres away <br> from the nearest marker: ' + textForcurrMarker + '</html>');
 		});
 
         render_map(latitude, longitude, distance, textForcurrMarker);
@@ -204,16 +206,26 @@ window.onload = function() {
         $.get("/getAllLocations", {}, function(data) {
 			//create the map and center around curr location
 			if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(render_init_map, errorCoor, {maximumAge:60000, timeout:5000, enableHighAccuracy:true});
-		            place_all_markers(data);
-		        } else {
-		            alert("HTML5 Geolocation does not work here");
-		        }	
-			
+                navigator.geolocation.getCurrentPosition(render_init_map, errorCoor, {maximumAge:60000, timeout:5000, enableHighAccuracy:true});
+                place_all_markers(data);
+	        } else {
+                alert("HTML5 Geolocation does not work here");
+	        }	
 		})
-		
 	}
 
 	get_all_locations();
     get_location();
+
+    // var canvas = document.getElementById("map_canvas");
+    // if (canvas.getContext) {
+    //     var ctx = canvas.getContext("2d");
+    //     ctx.strokeStyle = "red";
+    //     ctx.fillStyle = "red";
+        
+    //     ctx.fillRect(150,0,200,50);
+    //     alert(width);alert(height);
+    //     // Draw a square using the rect() method
+    //     ctx.stroke();
+    // }
 }
